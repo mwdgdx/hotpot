@@ -90,7 +90,7 @@ class Model(nn.Module):
         output_t = self.linear_2(output_t)
 
         output = output + output_t
-
+#       late residual
         sp_output = self.rnn_sp(output, context_lens)
 
         start_output = torch.matmul(start_mapping.permute(0, 2, 1).contiguous(), sp_output[:,:,self.hidden:])
