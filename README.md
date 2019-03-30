@@ -1,5 +1,9 @@
 # Remider:
 linux codes:
+validation codes:
+```
+CUDA_VISIBLE_DEVICES=0 python main.py --mode test --data_split dev --para_limit 2250 --batch_size 24 --init_lr 0.1 --keep_prob 1.0 --sp_lambda 1.0 --save HOTPOT-20190329-013728 --prediction_file dev_distractor_pred.json
+```
 # HotpotQA: A Dataset for Diverse, Explainable Multi-hop Question Answering
 
 This repository contains the baseline model code, as well as the entire pipeline of running experiments on the HotpotQA dataset,
