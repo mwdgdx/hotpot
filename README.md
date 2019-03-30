@@ -4,6 +4,18 @@ validation codes:
 ```
 CUDA_VISIBLE_DEVICES=0 python main.py --mode test --data_split dev --para_limit 2250 --batch_size 24 --init_lr 0.1 --keep_prob 1.0 --sp_lambda 1.0 --save HOTPOT-20190329-013728 --prediction_file dev_distractor_pred.json
 ```
+validation outputs:
+```
+| epoch   4 | step  17600 | lr 0.00156 | ms/batch 1139.40 | train loss    2.398
+| epoch   4 | step  17700 | lr 0.00156 | ms/batch 1121.55 | train loss    2.487
+| epoch   4 | step  17800 | lr 0.00156 | ms/batch 1114.87 | train loss    2.408
+| epoch   4 | step  17900 | lr 0.00156 | ms/batch 1152.25 | train loss    2.371
+| epoch   4 | step  18000 | lr 0.00156 | ms/batch 1154.26 | train loss    2.343
+-----------------------------------------------------------------------------------------
+| eval     18 in epoch   4 | time: 1292.35s | dev loss    4.860 | EM 42.5705 | F1 56.6056
+-----------------------------------------------------------------------------------------
+best_dev_F1 56.64527711671228
+```
 # HotpotQA: A Dataset for Diverse, Explainable Multi-hop Question Answering
 
 This repository contains the baseline model code, as well as the entire pipeline of running experiments on the HotpotQA dataset,
