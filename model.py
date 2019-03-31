@@ -234,8 +234,9 @@ class BiAttention(nn.Module):
         output_one = torch.bmm(weight_one, memory)
 #       b*m*d  = b*m*n * b*n*d
         weight_two = F.softmax(att.max(dim=-1)[0], dim=-1).view(bsz, 1, input_len)
+#       b*m*1(max)-> b*1*m
         output_two = torch.bmm(weight_two, input)
-
+#       b*1*d= b*1*m * b*m*d
         return torch.cat([input, output_one, input*output_one, output_two*output_one], dim=-1)
 
 class GateLayer(nn.Module):
