@@ -63,27 +63,32 @@ class Model(nn.Module):
 
     def forward(self, context_idxs, ques_idxs, context_char_idxs, ques_char_idxs, context_lens, start_mapping, end_mapping, all_mapping, return_yp=False):
         para_size, ques_size, char_size, bsz = context_idxs.size(1), ques_idxs.size(1), context_char_idxs.size(2), context_idxs.size(0)
+#       para_size: m， ques_size: n
 #       context_idxs 的每一位是字典中的index
 #       filter ==0 的项
         context_mask = (context_idxs > 0).float()
         ques_mask = (ques_idxs > 0).float()
-
+#       ques_idx: b*n*1
         context_ch = self.char_emb(context_char_idxs.contiguous().view(-1, char_size)).view(bsz * para_size, char_size, -1)
         ques_ch = self.char_emb(ques_char_idxs.contiguous().view(-1, char_size)).view(bsz * ques_size, char_size, -1)
 
         context_ch = self.char_cnn(context_ch.permute(0, 2, 1).contiguous()).max(dim=-1)[0].view(bsz, para_size, -1)
+#         b*m*k
         ques_ch = self.char_cnn(ques_ch.permute(0, 2, 1).contiguous()).max(dim=-1)[0].view(bsz, ques_size, -1)
-
+#         b*n*k
         context_word = self.word_emb(context_idxs)
+#         b*m*j
         ques_word = self.word_emb(ques_idxs)
-
+#         b*n*j
         context_output = torch.cat([context_word, context_ch], dim=2)
+#         b*m*d (d=j+k)
         ques_output = torch.cat([ques_word, ques_ch], dim=2)
-
+#         b*n*d (d=j+k)
         context_output = self.rnn(context_output, context_lens)
         ques_output = self.rnn(ques_output)
 #       用ques 做mask 
         output = self.qc_att(context_output, ques_output, ques_mask)
+#       ques_mask: b*n*1
         output = self.linear_1(output)
 
         output_t = self.rnn_2(output, context_lens)
@@ -199,24 +204,35 @@ class BiAttention(nn.Module):
         super().__init__()
         self.dropout = LockedDropout(dropout)
         self.input_linear = nn.Linear(input_size, 1, bias=False)
+#       d维变1维
         self.memory_linear = nn.Linear(input_size, 1, bias=False)
-
+#       d维变1维
         self.dot_scale = nn.Parameter(torch.Tensor(input_size).uniform_(1.0 / (input_size ** 0.5)))
 
     def forward(self, input, memory, mask):
         bsz, input_len, memory_len = input.size(0), input.size(1), memory.size(1)
-
+#       bsz： batch size
+#       input_len context的每句话长度    context: b*m*d
+#       memory_len question 每句话的长度 memory : b*n*d
         input = self.dropout(input)
         memory = self.dropout(memory)
 
         input_dot = self.input_linear(input)
+#         b*m*1
         memory_dot = self.memory_linear(memory).view(bsz, 1, memory_len)
+#         b*1*n
         cross_dot = torch.bmm(input * self.dot_scale, memory.permute(0, 2, 1).contiguous())
+#         b*m*d * b*d*n=> b*m*n
         att = input_dot + memory_dot + cross_dot
+#       b*m*n  = b*m*1 + b*1*n + b*m*n
         att = att - 1e30 * (1 - mask[:,None])
-
+#       Biattention 用的是ques_mask: b*n
+#       att 维度为： b*m*n
+#       mask[:,None] 为： b*n*1？？ 难道不应该是b*1*n? mask[:,None] 是怎么运作的？
         weight_one = F.softmax(att, dim=-1)
+#       b*m*n 关于n(question_lens)做softmax
         output_one = torch.bmm(weight_one, memory)
+#       b*m*d  = b*m*n * b*n*d
         weight_two = F.softmax(att.max(dim=-1)[0], dim=-1).view(bsz, 1, input_len)
         output_two = torch.bmm(weight_two, input)
 
