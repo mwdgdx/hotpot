@@ -237,6 +237,7 @@ def build_features(config, examples, data_type, out_file, word2idx_dict, char2id
         para_limit, ques_limit = 0, 0
         for example in tqdm(examples):
             para_limit = max(para_limit, len(example['context_tokens']))
+#             para_limit 为 所有句子的最大值
             ques_limit = max(ques_limit, len(example['ques_tokens']))
     else:
         para_limit = config.para_limit
@@ -274,7 +275,7 @@ def build_features(config, examples, data_type, out_file, word2idx_dict, char2id
             if char in char2idx_dict:
                 return char2idx_dict[char]
             return 1
-
+#       token 是一个单词 输出的context_idxs是一个vector 其中小于para_limit的部分为0
         context_idxs[:len(example['context_tokens'])] = [_get_word(token) for token in example['context_tokens']]
         ques_idxs[:len(example['ques_tokens'])] = [_get_word(token) for token in example['ques_tokens']]
 
@@ -288,7 +289,8 @@ def build_features(config, examples, data_type, out_file, word2idx_dict, char2id
 
         start, end = example["y1s"][-1], example["y2s"][-1]
         y1, y2 = start, end
-
+#         example 是examples 中的一行
+#         这个append的是一个vector
         datapoints.append({'context_idxs': torch.from_numpy(context_idxs),
             'context_char_idxs': torch.from_numpy(context_char_idxs),
             'ques_idxs': torch.from_numpy(ques_idxs),
