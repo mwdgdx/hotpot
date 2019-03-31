@@ -63,7 +63,8 @@ class Model(nn.Module):
 
     def forward(self, context_idxs, ques_idxs, context_char_idxs, ques_char_idxs, context_lens, start_mapping, end_mapping, all_mapping, return_yp=False):
         para_size, ques_size, char_size, bsz = context_idxs.size(1), ques_idxs.size(1), context_char_idxs.size(2), context_idxs.size(0)
-
+#       context_idxs 的每一位是字典中的index
+#       filter ==0 的项
         context_mask = (context_idxs > 0).float()
         ques_mask = (ques_idxs > 0).float()
 
@@ -81,7 +82,7 @@ class Model(nn.Module):
 
         context_output = self.rnn(context_output, context_lens)
         ques_output = self.rnn(ques_output)
-
+#       用ques 做mask 
         output = self.qc_att(context_output, ques_output, ques_mask)
         output = self.linear_1(output)
 
