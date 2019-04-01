@@ -84,11 +84,12 @@ def prepro_sent(sent):
     # return sent.replace("''", '" ').replace("``", '" ')
 
 def _process_article(article, config):
+    #     一个由段落组成的list
     paragraphs = article['context']
     # some articles in the fullwiki dev/test sets have zero paragraphs
     if len(paragraphs) == 0:
         paragraphs = [['some random title', 'some random stuff']]
-
+        
     text_context, context_tokens, context_chars = '', [], []
     offsets = []
     flat_offsets = []
@@ -166,11 +167,14 @@ def _process_article(article, config):
     return example, eval_example
 
 def process_file(filename, config, word_counter=None, char_counter=None):
+# filename = data_file: hotpot_train_v1.1.json  暂时不知道这里面是什么东西
     data = json.load(open(filename, 'r'))
-
+#     list
     examples = []
+#     set
     eval_examples = {}
-
+#   多进程处理各个: _process_article(article,config)  
+#   output是个什么东西？
     outputs = Parallel(n_jobs=12, verbose=10)(delayed(_process_article)(article, config) for article in data)
     # outputs = [_process_article(article, config) for article in data]
     examples = [e[0] for e in outputs]
@@ -327,9 +331,11 @@ def prepro(config):
     random.seed(13)
 
     if config.data_split == 'train':
+#         如果是train的话就要使用counter
         word_counter, char_counter = Counter(), Counter()
         examples, eval_examples = process_file(config.data_file, config, word_counter, char_counter)
     else:
+#         如果是dev,test的话就不用counter
         examples, eval_examples = process_file(config.data_file, config)
 
     word2idx_dict = None
