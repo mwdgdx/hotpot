@@ -97,27 +97,37 @@ def _process_article(article, config):
     sent2title_ids = []
 
     def _process(sent, is_sup_fact, is_title=False):
+#         主函数中的变量
         nonlocal text_context, context_tokens, context_chars, offsets, start_end_facts, flat_offsets
         N_chars = len(text_context)
 
         sent = sent
+#         将一句话 string 转为token 的数组 Doc
         sent_tokens = word_tokenize(sent)
         if is_title:
+#             更新title 的格式： string 和Doc(token 数组)
             sent = '<t> {} </t>'.format(sent)
             sent_tokens = ['<t>'] + sent_tokens + ['</t>']
+#         将token 转为字母的list
         sent_chars = [list(token) for token in sent_tokens]
+#         返回范围数组: list of range of position index : (current,current+len)
         sent_spans = convert_idx(sent, sent_tokens)
-
+#         更新全局范围
         sent_spans = [[N_chars+e[0], N_chars+e[1]] for e in sent_spans]
         N_tokens, my_N_tokens = len(context_tokens), len(sent_tokens)
-
+#        text_context为一个string 
         text_context += sent
+#         context_tokens: list of list of tokens
         context_tokens.extend(sent_tokens)
+#         context_chars: list of list of list of chars
         context_chars.extend(sent_chars)
+#         start_end_facts: 范围+ is_sup_fact的数组
         start_end_facts.append((N_tokens, N_tokens+my_N_tokens, is_sup_fact))
+#         offsets: 范围数组 :区分paragraph
         offsets.append(sent_spans)
+#         flat_offsets： 范围数组： 不分paragraph
         flat_offsets.extend(sent_spans)
-
+#    ？？ 这是什么？ article 中有没有Key ’supporting_facts‘ 
     if 'supporting_facts' in article:
         sp_set = set(list(map(tuple, article['supporting_facts'])))
     else:
@@ -126,13 +136,18 @@ def _process_article(article, config):
     sp_fact_cnt = 0
     for para in paragraphs:
         cur_title, cur_para = para[0], para[1]
+#         prepro_sent 是啥都不干
         _process(prepro_sent(cur_title), False, is_title=True)
         sent2title_ids.append((cur_title, -1))
+#         cur_para是由句子组成的list
         for sent_id, sent in enumerate(cur_para):
+#             判断 （title, id）是否在这个数组中
             is_sup_fact = (cur_title, sent_id) in sp_set
             if is_sup_fact:
                 sp_fact_cnt += 1
+#                 sent 为句子
             _process(prepro_sent(sent), is_sup_fact)
+#                （cur_title, sent_id）
             sent2title_ids.append((cur_title, sent_id))
 
     if 'answer' in article:
