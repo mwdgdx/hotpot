@@ -193,9 +193,12 @@ def process_file(filename, config, word_counter=None, char_counter=None):
 
 def get_embedding(counter, data_type, limit=-1, emb_file=None, size=None, vec_size=None, token2idx_dict=None):
     print("Generating {} embedding...".format(data_type))
+#     data_type 为word
     embedding_dict = {}
+#     dictionary
     filtered_elements = [k for k, v in counter.items() if v > limit]
     if emb_file is not None:
+#         emb_file 应该为生成字典的文件
         assert size is not None
         assert vec_size is not None
         with open(emb_file, "r", encoding="utf-8") as fh:
@@ -208,8 +211,10 @@ def get_embedding(counter, data_type, limit=-1, emb_file=None, size=None, vec_si
         print("{} / {} tokens have corresponding {} embedding vector".format(
             len(embedding_dict), len(filtered_elements), data_type))
     else:
+#         若没有生成字典的文件 字典由filtered_elementes 中的元素构建
         assert vec_size is not None
         for token in filtered_elements:
+#             每个element map到的的embedding vector 是一个vec_size长度的 normal distributed的vector
             embedding_dict[token] = [np.random.normal(
                 scale=0.01) for _ in range(vec_size)]
         print("{} tokens have corresponding embedding vector".format(
@@ -217,16 +222,25 @@ def get_embedding(counter, data_type, limit=-1, emb_file=None, size=None, vec_si
 
     NULL = "--NULL--"
     OOV = "--OOV--"
+#     enumerate 产生的一个是一个 index+ 元素的组合的list
+#     token2idx_dict 是一个从token 至index的dictionary 其中 index从2开始
+#     如果函数输入值有token2idx_dict的话就使用输入
     token2idx_dict = {token: idx for idx, token in enumerate(
         embedding_dict.keys(), 2)} if token2idx_dict is None else token2idx_dict
     token2idx_dict[NULL] = 0
+#     设置index 0
     token2idx_dict[OOV] = 1
+#     设置index 1
     embedding_dict[NULL] = [0. for _ in range(vec_size)]
+#     设置0 的embedding_dict: 全零
     embedding_dict[OOV] = [0. for _ in range(vec_size)]
+#     设置1 的embedding: 全0
+#     由index至embedding的Mapping
     idx2emb_dict = {idx: embedding_dict[token]
                     for token, idx in token2idx_dict.items()}
+#     所有embedding的list： 包含了index 为0 与为1
     emb_mat = [idx2emb_dict[idx] for idx in range(len(idx2emb_dict))]
-
+#    idx-> token 的dict 是token2idx_dict的反向
     idx2token_dict = {idx: token for token, idx in token2idx_dict.items()}
 
     return emb_mat, token2idx_dict, idx2token_dict
@@ -321,8 +335,10 @@ def prepro(config):
     word2idx_dict = None
     if os.path.isfile(config.word2idx_file):
         with open(config.word2idx_file, "r") as fh:
+#             如果之前已经处理过的话： 直接load word2idx_dict
             word2idx_dict = json.load(fh)
     else:
+#             如果之前没有处理过的话： get_embedding
         word_emb_mat, word2idx_dict, idx2word_dict = get_embedding(word_counter, "word", emb_file=config.glove_word_file,
                                                 size=config.glove_word_size, vec_size=config.glove_dim, token2idx_dict=word2idx_dict)
 
