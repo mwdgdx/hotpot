@@ -122,7 +122,7 @@ def _process_article(article, config):
         N_tokens, my_N_tokens = len(context_tokens), len(sent_tokens)
 #        text_context为一个string 
         text_context += sent
-#         context_tokens: list of list of tokens
+#         context_tokens: list of tokens
         context_tokens.extend(sent_tokens)
 #         context_chars: list of list of list of chars
         context_chars.extend(sent_chars)
