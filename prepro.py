@@ -182,7 +182,7 @@ def _process_article(article, config):
 
     ques_tokens = word_tokenize(prepro_sent(article['question']))
     ques_chars = [list(token) for token in ques_tokens]
-    #         context_tokens: list of list of tokens
+    #         context_tokens: list of list of tokens. article中句子的集合
     #         context_chars: list of list of list of chars
 #          y1s 为答案的起始点
 #          y2s 为答案的终点
