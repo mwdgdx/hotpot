@@ -13,6 +13,7 @@ class Model(nn.Module):
         super().__init__()
         self.config = config
         self.word_dim = config.glove_dim
+#         word_mat 是一个字典
         self.word_emb = nn.Embedding(len(word_mat), len(word_mat[0]), padding_idx=0)
         self.word_emb.weight.data.copy_(torch.from_numpy(word_mat))
         self.word_emb.weight.requires_grad = False
