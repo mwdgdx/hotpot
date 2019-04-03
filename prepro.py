@@ -84,6 +84,10 @@ def prepro_sent(sent):
     # return sent.replace("''", '" ').replace("``", '" ')
 
 def _process_article(article, config):
+#     article： 一个dictionary: 
+#               key context   由paragraph list 构成 每个paragraph 由para[0]:title para[1]: cur_para构成
+#               key question
+#               key supporting
     #     一个由段落组成的list
     paragraphs = article['context']
     # some articles in the fullwiki dev/test sets have zero paragraphs
@@ -130,9 +134,10 @@ def _process_article(article, config):
 #    ？？ 这是什么？ article 中有没有Key ’supporting_facts‘ 
     if 'supporting_facts' in article:
         sp_set = set(list(map(tuple, article['supporting_facts'])))
+#         sp_set的Key 为(title, idx) pair
     else:
         sp_set = set()
-
+#   记录总共有几个support factor count
     sp_fact_cnt = 0
     for para in paragraphs:
         cur_title, cur_para = para[0], para[1]
@@ -151,6 +156,7 @@ def _process_article(article, config):
             sent2title_ids.append((cur_title, sent_id))
 
     if 'answer' in article:
+#         删去头尾string的空白
         answer = article['answer'].strip()
         if answer.lower() == 'yes':
             best_indices = [-1, -1]
@@ -175,8 +181,11 @@ def _process_article(article, config):
 
     ques_tokens = word_tokenize(prepro_sent(article['question']))
     ques_chars = [list(token) for token in ques_tokens]
-
-    example = {'context_tokens': context_tokens,'context_chars': context_chars, 'ques_tokens': ques_tokens, 'ques_chars': ques_chars, 'y1s': [best_indices[0]], 'y2s': [best_indices[1]], 'id': article['_id'], 'start_end_facts': start_end_facts}
+    #         context_tokens: list of list of tokens
+    #         context_chars: list of list of list of chars
+    example = {'context_tokens': context_tokens,'context_chars': context_chars, 
+               'ques_tokens': ques_tokens, 'ques_chars': ques_chars, 'y1s': [best_indices[0]], 
+               'y2s': [best_indices[1]], 'id': article['_id'], 'start_end_facts': start_end_facts}
     eval_example = {'context': text_context, 'spans': flat_offsets, 'answer': [answer], 'id': article['_id'],
             'sent2title_ids': sent2title_ids}
     return example, eval_example
