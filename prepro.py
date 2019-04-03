@@ -280,28 +280,32 @@ def get_embedding(counter, data_type, limit=-1, emb_file=None, size=None, vec_si
 
 
 def build_features(config, examples, data_type, out_file, word2idx_dict, char2idx_dict):
+#     大致为word数组转idx
     if data_type == 'test':
         para_limit, ques_limit = 0, 0
         for example in tqdm(examples):
+#             context_tokens是词的集合（句子结构以及paragraph结构已经被break了）
             para_limit = max(para_limit, len(example['context_tokens']))
-#             para_limit 为 所有句子的最大值
+#             para_limit 为 所有句子个数的最大值
             ques_limit = max(ques_limit, len(example['ques_tokens']))
     else:
         para_limit = config.para_limit
         ques_limit = config.ques_limit
 
     char_limit = config.char_limit
-
+#  判断词数超越设定值（设定值在train模式下是pre规定的）
     def filter_func(example):
         return len(example["context_tokens"]) > para_limit or len(example["ques_tokens"]) > ques_limit
 
     print("Processing {} examples...".format(data_type))
     datapoints = []
+#     句数合适的article
     total = 0
+#     所有的article
     total_ = 0
     for example in tqdm(examples):
         total_ += 1
-
+#       保证article的词数合适
         if filter_func(example):
             continue
 
