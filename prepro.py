@@ -84,6 +84,7 @@ def prepro_sent(sent):
     # return sent.replace("''", '" ').replace("``", '" ')
 
 def _process_article(article, config):
+#     一篇文章包含 各种段落+ answer+ question+，每个段落
 #     article： 一个dictionary: 
 #               key context   由paragraph list 构成 每个paragraph 由para[0]:title para[1]: cur_para构成
 #               key question
@@ -183,9 +184,13 @@ def _process_article(article, config):
     ques_chars = [list(token) for token in ques_tokens]
     #         context_tokens: list of list of tokens
     #         context_chars: list of list of list of chars
+#          y1s 为答案的起始点
+#          y2s 为答案的终点
     example = {'context_tokens': context_tokens,'context_chars': context_chars, 
                'ques_tokens': ques_tokens, 'ques_chars': ques_chars, 'y1s': [best_indices[0]], 
                'y2s': [best_indices[1]], 'id': article['_id'], 'start_end_facts': start_end_facts}
+#       answer为具体的answer
+#       text_context 为一个token 流
     eval_example = {'context': text_context, 'spans': flat_offsets, 'answer': [answer], 'id': article['_id'],
             'sent2title_ids': sent2title_ids}
     return example, eval_example
@@ -216,7 +221,7 @@ def process_file(filename, config, word_counter=None, char_counter=None):
 
     random.shuffle(examples)
     print("{} questions in total".format(len(examples)))
-
+#    examples 和eval_examples就是各article 输出的list
     return examples, eval_examples
 
 def get_embedding(counter, data_type, limit=-1, emb_file=None, size=None, vec_size=None, token2idx_dict=None):
@@ -356,12 +361,14 @@ def prepro(config):
 
     if config.data_split == 'train':
 #         如果是train的话就要使用counter
+#       word_counter train/ validation 中每个词出现的次数
+#       char_counter train/ validation 中每个char 出现的次数
         word_counter, char_counter = Counter(), Counter()
         examples, eval_examples = process_file(config.data_file, config, word_counter, char_counter)
     else:
 #         如果是dev,test的话就不用counter
         examples, eval_examples = process_file(config.data_file, config)
-
+# word ***************
     word2idx_dict = None
     if os.path.isfile(config.word2idx_file):
         with open(config.word2idx_file, "r") as fh:
@@ -369,9 +376,10 @@ def prepro(config):
             word2idx_dict = json.load(fh)
     else:
 #             如果之前没有处理过的话： get_embedding
+#       从词到embatting_vector/ dict 的映射关系 （dictionary）
         word_emb_mat, word2idx_dict, idx2word_dict = get_embedding(word_counter, "word", emb_file=config.glove_word_file,
                                                 size=config.glove_word_size, vec_size=config.glove_dim, token2idx_dict=word2idx_dict)
-
+# char **************
     char2idx_dict = None
     if os.path.isfile(config.char2idx_file):
         with open(config.char2idx_file, "r") as fh:
@@ -389,10 +397,10 @@ def prepro(config):
     elif config.data_split == 'test':
         record_file = config.test_record_file
         eval_file = config.test_eval_file
-
+# 存储matrix  ******
     build_features(config, examples, config.data_split, record_file, word2idx_dict, char2idx_dict)
     save(eval_file, eval_examples, message='{} eval'.format(config.data_split))
-
+# 存储字典     ******
     if not os.path.isfile(config.word2idx_file):
         save(config.word_emb_file, word_emb_mat, message="word embedding")
         save(config.char_emb_file, char_emb_mat, message="char embedding")
