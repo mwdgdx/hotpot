@@ -1,4 +1,4 @@
-
+import pandas as pd
 import random
 from tqdm import tqdm
 import spacy
@@ -281,6 +281,7 @@ def get_embedding(counter, data_type, limit=-1, emb_file=None, size=None, vec_si
 
 
 def build_features(config, examples, data_type, out_file, word2idx_dict, char2idx_dict):
+    length_vector=[]
 #     大致为word数组转idx
     if data_type == 'test':
         para_limit, ques_limit = 0, 0
@@ -294,66 +295,12 @@ def build_features(config, examples, data_type, out_file, word2idx_dict, char2id
         ques_limit = config.ques_limit
 
     char_limit = config.char_limit
-#  判断词数超越设定值（设定值在train模式下是pre规定的）
-    def filter_func(example):
-        return len(example["context_tokens"]) > para_limit or len(example["ques_tokens"]) > ques_limit
-
     print("Processing {} examples...".format(data_type))
-    datapoints = []
-#     句数合适的article
-    total = 0
-#     所有的article
-    total_ = 0
     for example in tqdm(examples):
-        total_ += 1
-#       保证article的词数合适
-        if filter_func(example):
-            continue
-
-        total += 1
-
-        context_idxs = np.zeros(para_limit, dtype=np.int64)
-        context_char_idxs = np.zeros((para_limit, char_limit), dtype=np.int64)
-        ques_idxs = np.zeros(ques_limit, dtype=np.int64)
-        ques_char_idxs = np.zeros((ques_limit, char_limit), dtype=np.int64)
-
-        def _get_word(word):
-            for each in (word, word.lower(), word.capitalize(), word.upper()):
-                if each in word2idx_dict:
-                    return word2idx_dict[each]
-            return 1
-
-        def _get_char(char):
-            if char in char2idx_dict:
-                return char2idx_dict[char]
-            return 1
-#       token 是一个单词 输出的context_idxs是一个vector 其中小于para_limit的部分为0
-        context_idxs[:len(example['context_tokens'])] = [_get_word(token) for token in example['context_tokens']]
-        ques_idxs[:len(example['ques_tokens'])] = [_get_word(token) for token in example['ques_tokens']]
-
-        for i, token in enumerate(example["context_chars"]):
-            l = min(len(token), char_limit)
-            context_char_idxs[i, :l] = [_get_char(char) for char in token[:l]]
-
-        for i, token in enumerate(example["ques_chars"]):
-            l = min(len(token), char_limit)
-            ques_char_idxs[i, :l] = [_get_char(char) for char in token[:l]]
-
-        start, end = example["y1s"][-1], example["y2s"][-1]
-        y1, y2 = start, end
-#         example 是examples 中的一行
-#         这个append的是一个vector
-        datapoints.append({'context_idxs': torch.from_numpy(context_idxs),
-            'context_char_idxs': torch.from_numpy(context_char_idxs),
-            'ques_idxs': torch.from_numpy(ques_idxs),
-            'ques_char_idxs': torch.from_numpy(ques_char_idxs),
-            'y1': y1,
-            'y2': y2,
-            'id': example['id'],
-            'start_end_facts': example['start_end_facts']})
-    print("Build {} / {} instances of features in total".format(total, total_))
-    # pickle.dump(datapoints, open(out_file, 'wb'), protocol=-1)
-    torch.save(datapoints, out_file)
+        length_vector+=[len(example["context_tokens"])]
+    dataframe = pd.DataFrame({'length_in_words':length_vector})
+    dataframe.to_csv("length_vector.csv",index=False,sep=',')
+    
 
 def save(filename, obj, message=None):
     if message is not None:
@@ -404,12 +351,3 @@ def prepro(config):
         eval_file = config.test_eval_file
 # 存储matrix  ******
     build_features(config, examples, config.data_split, record_file, word2idx_dict, char2idx_dict)
-    save(eval_file, eval_examples, message='{} eval'.format(config.data_split))
-# 存储字典     ******
-    if not os.path.isfile(config.word2idx_file):
-        save(config.word_emb_file, word_emb_mat, message="word embedding")
-        save(config.char_emb_file, char_emb_mat, message="char embedding")
-        save(config.word2idx_file, word2idx_dict, message="word2idx")
-        save(config.char2idx_file, char2idx_dict, message="char2idx")
-        save(config.idx2word_file, idx2word_dict, message='idx2word')
-        save(config.idx2char_file, idx2char_dict, message='idx2char')
