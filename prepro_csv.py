@@ -225,92 +225,18 @@ def process_file(filename, config, word_counter=None, char_counter=None):
 #    examples 和eval_examples就是各article 输出的list
     return examples, eval_examples
 
-def get_embedding(counter, data_type, limit=-1, emb_file=None, size=None, vec_size=None, token2idx_dict=None):
-    print("Generating {} embedding...".format(data_type))
-#     data_type 为word
-    embedding_dict = {}
-#     dictionary
-    filtered_elements = [k for k, v in counter.items() if v > limit]
-    if emb_file is not None:
-#         emb_file 应该为生成字典的文件
-        assert size is not None
-        assert vec_size is not None
-        with open(emb_file, "r", encoding="utf-8") as fh:
-            for line in tqdm(fh, total=size):
-                array = line.split()
-                word = "".join(array[0:-vec_size])
-                vector = list(map(float, array[-vec_size:]))
-                if word in counter and counter[word] > limit:
-                    embedding_dict[word] = vector
-        print("{} / {} tokens have corresponding {} embedding vector".format(
-            len(embedding_dict), len(filtered_elements), data_type))
-    else:
-#         若没有生成字典的文件 字典由filtered_elementes 中的元素构建
-        assert vec_size is not None
-        for token in filtered_elements:
-#             每个element map到的的embedding vector 是一个vec_size长度的 normal distributed的vector
-            embedding_dict[token] = [np.random.normal(
-                scale=0.01) for _ in range(vec_size)]
-        print("{} tokens have corresponding embedding vector".format(
-            len(filtered_elements)))
-
-    NULL = "--NULL--"
-    OOV = "--OOV--"
-#     enumerate 产生的一个是一个 index+ 元素的组合的list
-#     token2idx_dict 是一个从token 至index的dictionary 其中 index从2开始
-#     如果函数输入值有token2idx_dict的话就使用输入
-    token2idx_dict = {token: idx for idx, token in enumerate(
-        embedding_dict.keys(), 2)} if token2idx_dict is None else token2idx_dict
-    token2idx_dict[NULL] = 0
-#     设置index 0
-    token2idx_dict[OOV] = 1
-#     设置index 1
-    embedding_dict[NULL] = [0. for _ in range(vec_size)]
-#     设置0 的embedding_dict: 全零
-    embedding_dict[OOV] = [0. for _ in range(vec_size)]
-#     设置1 的embedding: 全0
-#     由index至embedding的Mapping
-    idx2emb_dict = {idx: embedding_dict[token]
-                    for token, idx in token2idx_dict.items()}
-#     所有embedding的list： 包含了index 为0 与为1
-    emb_mat = [idx2emb_dict[idx] for idx in range(len(idx2emb_dict))]
-#    idx-> token 的dict 是token2idx_dict的反向
-    idx2token_dict = {idx: token for token, idx in token2idx_dict.items()}
-
-    return emb_mat, token2idx_dict, idx2token_dict
-
 
 def build_features(config, examples, data_type, out_file, word2idx_dict, char2idx_dict):
     length_vector=[]
-#     大致为word数组转idx
-    if data_type == 'test':
-        para_limit, ques_limit = 0, 0
-        for example in tqdm(examples):
-#             context_tokens是词的集合（句子结构以及paragraph结构已经被break了）
-            para_limit = max(para_limit, len(example['context_tokens']))
-#             para_limit 为 所有句子个数的最大值
-            ques_limit = max(ques_limit, len(example['ques_tokens']))
-    else:
-        para_limit = config.para_limit
-        ques_limit = config.ques_limit
-
-    char_limit = config.char_limit
-    print("Processing {} examples...".format(data_type))
     for example in tqdm(examples):
         length_vector+=[len(example["context_tokens"])]
     dataframe = pd.DataFrame({'length_in_words':length_vector})
     dataframe.to_csv("length_vector.csv",index=False,sep=',')
     
 
-def save(filename, obj, message=None):
-    if message is not None:
-        print("Saving {}...".format(message))
-    with open(filename, "w") as fh:
-        json.dump(obj, fh)
 
 def prepro(config):
     random.seed(13)
-
     if config.data_split == 'train':
 #         如果是train的话就要使用counter
 #       word_counter train/ validation 中每个词出现的次数
@@ -320,34 +246,4 @@ def prepro(config):
     else:
 #         如果是dev,test的话就不用counter
         examples, eval_examples = process_file(config.data_file, config)
-# word ***************
-    word2idx_dict = None
-    if os.path.isfile(config.word2idx_file):
-        with open(config.word2idx_file, "r") as fh:
-#             如果之前已经处理过的话： 直接load word2idx_dict
-            word2idx_dict = json.load(fh)
-    else:
-#             如果之前没有处理过的话： get_embedding
-#       从词到embatting_vector/ dict 的映射关系 （dictionary）
-        word_emb_mat, word2idx_dict, idx2word_dict = get_embedding(word_counter, "word", emb_file=config.glove_word_file,
-                                                size=config.glove_word_size, vec_size=config.glove_dim, token2idx_dict=word2idx_dict)
-# char **************
-    char2idx_dict = None
-    if os.path.isfile(config.char2idx_file):
-        with open(config.char2idx_file, "r") as fh:
-            char2idx_dict = json.load(fh)
-    else:
-        char_emb_mat, char2idx_dict, idx2char_dict = get_embedding(
-            char_counter, "char", emb_file=None, size=None, vec_size=config.char_dim, token2idx_dict=char2idx_dict)
-
-    if config.data_split == 'train':
-        record_file = config.train_record_file
-        eval_file = config.train_eval_file
-    elif config.data_split == 'dev':
-        record_file = config.dev_record_file
-        eval_file = config.dev_eval_file
-    elif config.data_split == 'test':
-        record_file = config.test_record_file
-        eval_file = config.test_eval_file
-# 存储matrix  ******
-    build_features(config, examples, config.data_split, record_file, word2idx_dict, char2idx_dict)
+    build_features(config, examples, config.data_split)
