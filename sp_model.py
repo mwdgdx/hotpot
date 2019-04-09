@@ -40,7 +40,7 @@ class SPModel(nn.Module):
 
         self.rnn_sp = EncoderRNN(config.hidden, config.hidden, 1, False, True, 1-config.keep_prob, False)
         self.linear_sp = nn.Linear(config.hidden*2, 1)
-
+#       只有这里和model 不一样
         self.rnn_start = EncoderRNN(config.hidden*3, config.hidden, 1, False, True, 1-config.keep_prob, False)
         self.linear_start = nn.Linear(config.hidden*2, 1)
 
