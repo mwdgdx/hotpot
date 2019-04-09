@@ -34,7 +34,7 @@ def find_nearest(a, target, test_func=lambda x: True):
             return a[idx-1], d2
         else:
             return a[idx], d1
-
+# text_context, offsets, article['answer']
 def fix_span(para, offsets, span):
     span = span.strip()
     parastr = "".join(para)
@@ -171,6 +171,8 @@ def _process_article(article, config):
             else:
                 _, best_indices, _ = fix_span(text_context, offsets, article['answer'])
                 answer_span = []
+#                 这里面是找包含best_indices的句子idex范围
+#                 如：best_indices word span 在句idx 3,4,5 中
                 for idx, span in enumerate(flat_offsets):
                     if not (best_indices[1] <= span[0] or best_indices[0] >= span[1]):
                         answer_span.append(idx)
