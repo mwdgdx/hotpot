@@ -1,3 +1,6 @@
+# model file
+1. model for testing using only supporting facts:
+    [model](/model_test1.py)
 # Remider:
 wordlength_csv file: [wordlength_csv](/length_vector.csv)
 linux codes:
