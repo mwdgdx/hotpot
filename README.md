@@ -1,4 +1,5 @@
 # Remider:
+wordlength_csv file: [wordlength_csv](/length_vector.csv)
 linux codes:
 validation codes:
 ```
