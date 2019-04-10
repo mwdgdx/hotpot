@@ -151,11 +151,13 @@ def _process_article(article, config):
 #             判断 （title, id）是否在这个数组中
             is_sup_fact = (cur_title, sent_id) in sp_set
             if is_sup_fact:
-                sp_fact_cnt += 1
 #                 sent 为句子
-            _process(prepro_sent(sent), is_sup_fact)
+# ***********************important modification: only if it is supportfactor will we feed it into the dataset
+                _process(prepro_sent(sent), is_sup_fact)
 #                （cur_title, sent_id）
-            sent2title_ids.append((cur_title, sent_id))
+# ***********************important 
+                sent2title_ids.append((cur_title, sp_fact_cnt))
+                sp_fact_cnt += 1
 
     if 'answer' in article:
 #         删去头尾string的空白
