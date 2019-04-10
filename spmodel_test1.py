@@ -85,6 +85,8 @@ class SPModel(nn.Module):
         output = self.linear_1(output)
 
         output_t = self.rnn_2(output, context_lens)
+#         before self-attention： 
+#         filter
         output_t = self.self_att(output_t, output_t, context_mask)
         output_t = self.linear_2(output_t)
 
@@ -95,9 +97,9 @@ class SPModel(nn.Module):
         start_output = torch.matmul(start_mapping.permute(0, 2, 1).contiguous(), sp_output[:,:,self.hidden:])
         end_output = torch.matmul(end_mapping.permute(0, 2, 1).contiguous(), sp_output[:,:,:self.hidden])
         sp_output = torch.cat([start_output, end_output], dim=-1)
-        sp_output_t = self.linear_sp(sp_output)
-        sp_output_aux = Variable(sp_output_t.data.new(sp_output_t.size(0), sp_output_t.size(1), 1).zero_())
-        predict_support = torch.cat([sp_output_aux, sp_output_t], dim=-1).contiguous()
+#         sp_output_t = self.linear_sp(sp_output)
+#         sp_output_aux = Variable(sp_output_t.data.new(sp_output_t.size(0), sp_output_t.size(1), 1).zero_())
+#         predict_support = torch.cat([sp_output_aux, sp_output_t], dim=-1).contiguous()
 
         sp_output = torch.matmul(all_mapping, sp_output)
         output_start = torch.cat([output, sp_output], dim=-1)
@@ -119,7 +121,7 @@ class SPModel(nn.Module):
         outer = outer - 1e30 * (1 - outer_mask[None].expand_as(outer))
         yp1 = outer.max(dim=2)[0].max(dim=1)[1]
         yp2 = outer.max(dim=1)[0].max(dim=1)[1]
-        return logit1, logit2, predict_type, predict_support, yp1, yp2
+        return logit1, logit2, predict_type, yp1, yp2
 
 class LockedDropout(nn.Module):
     def __init__(self, dropout):
