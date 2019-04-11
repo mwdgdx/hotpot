@@ -1,5 +1,8 @@
 # model_using only supporting factors
-```| eval      6 in epoch   1 | time: 161.35s | dev loss    3.219 | EM 48.0081 | F1 62.9947```
+```-----------------------------------------------------------------------------------------
+| eval     15 in epoch   3 | time: 172.94s | dev loss    3.183 | EM 49.7772 | F1 64.5559
+-----------------------------------------------------------------------------------------
+best_dev_F1 64.60608215105948```
 # model file
 1. model for testing using only supporting facts:
     [model](/model_test1.py)
