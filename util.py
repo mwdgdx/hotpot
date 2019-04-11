@@ -139,7 +139,7 @@ def get_buckets(record_file):
     # datapoints = pickle.load(open(record_file, 'rb'))
     datapoints = torch.load(record_file)
     return [datapoints]
-
+# eval_file, data['ids'], yp1.data.cpu().numpy().tolist(), yp2.data.cpu().numpy().tolist(), np.argmax(predict_type.data.cpu().numpy(), 1
 def convert_tokens(eval_file, qa_id, pp1, pp2, p_type):
     answer_dict = {}
     for qid, p1, p2, type in zip(qa_id, pp1, pp2, p_type):
