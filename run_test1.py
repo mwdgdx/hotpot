@@ -250,6 +250,8 @@ def test(config):
                 f_log.write(s + '\n')
 
     if config.data_split == 'dev':
+#         我们暂时用的是dev 
+#         不知道data_split的含义
         dev_buckets = get_buckets(config.dev_record_file)
         para_limit = config.para_limit
         ques_limit = config.ques_limit
