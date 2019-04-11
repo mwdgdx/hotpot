@@ -35,6 +35,68 @@ CUDA_VISIBLE_DEVICES=0 python main.py --mode test --data_split dev --para_limit 
 ```
 python hotpot_evaluate_v1.py dev_distractor_pred.json hotpot_dev_distractor_v1.json
 ```
+```
+missing answer 5a87ab905542996e4f3088c1
+missing sp fact 5a87ab905542996e4f3088c1
+missing answer 5ab56e32554299637185c594
+missing sp fact 5ab56e32554299637185c594
+missing answer 5a760ab65542994ccc918697
+missing sp fact 5a760ab65542994ccc918697
+missing answer 5ab7f97a5542991d322237ef
+missing sp fact 5ab7f97a5542991d322237ef
+missing answer 5ab266b5554299340b5254b4
+missing sp fact 5ab266b5554299340b5254b4
+missing answer 5ae7eb3c5542994a481bbe20
+missing sp fact 5ae7eb3c5542994a481bbe20
+
+missing answer 5a8b595855429949d91db563
+missing sp fact 5a8b595855429949d91db563
+missing answer 5a80762a5542996402f6a536
+missing sp fact 5a80762a5542996402f6a536
+missing answer 5adbe2c65542996e68525274
+missing sp fact 5adbe2c65542996e68525274
+missing answer 5ab8f33155429919ba4e237f
+missing sp fact 5ab8f33155429919ba4e237f
+missing answer 5a8f495c5542997ba9cb3220
+missing sp fact 5a8f495c5542997ba9cb3220
+missing answer 5a753c8c55429916b01642ab
+missing sp fact 5a753c8c55429916b01642ab
+missing answer 5ae5be02554299546bf82f3e
+missing sp fact 5ae5be02554299546bf82f3e
+missing answer 5a9042825542990a984935d6
+missing sp fact 5a9042825542990a984935d6
+missing answer 5adfff0755429925eb1afbce
+missing sp fact 5adfff0755429925eb1afbce
+missing answer 5adfa22655429942ec259ac4
+missing sp fact 5adfa22655429942ec259ac4
+missing answer 5a8f541e5542992414482a53
+missing sp fact 5a8f541e5542992414482a53
+missing answer 5a8bf0835542995d1e6f146b
+missing sp fact 5a8bf0835542995d1e6f146b
+missing answer 5ae69e6d5542996d980e7c62
+missing sp fact 5ae69e6d5542996d980e7c62
+missing answer 5a808f3f5542992097ad2ffd
+missing sp fact 5a808f3f5542992097ad2ffd
+missing answer 5a7b68a75542997c3ec97153
+missing sp fact 5a7b68a75542997c3ec97153
+missing answer 5a722a6855429971e9dc9320
+missing sp fact 5a722a6855429971e9dc9320
+missing answer 5a8f122955429918e830d17f
+missing sp fact 5a8f122955429918e830d17f
+missing answer 5ab2f6bd554299166977415e
+missing sp fact 5ab2f6bd554299166977415e
+missing answer 5a74629255429929fddd8402
+missing sp fact 5a74629255429929fddd8402
+missing answer 5a85a37d5542997175ce1fe5
+missing sp fact 5a85a37d5542997175ce1fe5
+missing answer 5a87bd4e5542996432c57279
+missing sp fact 5a87bd4e5542996432c57279
+missing answer 5ae67fba5542996d980e7b9a
+missing sp fact 5ae67fba5542996d980e7b9a
+missing answer 5ab29426554299545a2cf99f
+missing sp fact 5ab29426554299545a2cf99f
+{'sp_f1': 0.6191265655344054, 'recall': 0.5826240661559602, 'joint_prec': 0.3994076045306619, 'prec': 0.5861020489751079, 'joint_em': 0.09020931802835921, 'f1': 0.5642343875933413, 'joint_recall': 0.4101608971320206, 'em': 0.42336259284267386, 'sp_em': 0.17933828494260634, 'sp_recall': 0.6615560592906983, 'joint_f1': 0.37115038958007174, 'sp_prec': 0.6493791878464388}
+```
 
 # HotpotQA: A Dataset for Diverse, Explainable Multi-hop Question Answering
 
