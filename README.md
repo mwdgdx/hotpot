@@ -6,7 +6,7 @@
 best_dev_F1 64.60608215105948
 ```
 ```
-CUDA_VISIBLE_DEVICES=0 python main.py --mode test --data_split dev --para_limit 2250 --batch_size 24 --init_lr 0.1 --keep_prob 1.0 --sp_lambda 1.0 --save HOTPOT-20190329-013728 --prediction_file dev_distractor_pred.json
+CUDA_VISIBLE_DEVICES=0 python main.py --mode test --data_split dev --para_limit 2250 --batch_size 24 --init_lr 0.1 --keep_prob 1.0 --sp_lambda 1.0 --save HOTPOT-20190411-013304 --prediction_file dev_distractor_pred.json
 ```
 ```
 python hotpot_evaluate_v1.py dev_distractor_pred.json hotpot_dev_distractor_v1.json
