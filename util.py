@@ -140,6 +140,7 @@ def get_buckets(record_file):
     datapoints = torch.load(record_file)
     return [datapoints]
 # eval_file, data['ids'], yp1.data.cpu().numpy().tolist(), yp2.data.cpu().numpy().tolist(), np.argmax(predict_type.data.cpu().numpy(), 1
+# 返回值是一个 question_id to answer 的pair.
 def convert_tokens(eval_file, qa_id, pp1, pp2, p_type):
     answer_dict = {}
     for qid, p1, p2, type in zip(qa_id, pp1, pp2, p_type):
