@@ -207,8 +207,9 @@ def predict(data_source, model, eval_file, config, prediction_file):
 
         logit1, logit2, predict_type, predict_support, yp1, yp2 = model(context_idxs, ques_idxs, context_char_idxs, ques_char_idxs, context_lens, start_mapping, end_mapping, all_mapping, return_yp=True)
         answer_dict_ = convert_tokens(eval_file, data['ids'], yp1.data.cpu().numpy().tolist(), yp2.data.cpu().numpy().tolist(), np.argmax(predict_type.data.cpu().numpy(), 1))
+#       string -> string 的mapping 
         answer_dict.update(answer_dict_)
-
+#       ?????
         predict_support_np = torch.sigmoid(predict_support[:, :, 1]).data.cpu().numpy()
         for i in range(predict_support_np.shape[0]):
             cur_sp_pred = []
@@ -218,7 +219,7 @@ def predict(data_source, model, eval_file, config, prediction_file):
                 if predict_support_np[i, j] > sp_th:
                     cur_sp_pred.append(eval_file[cur_id]['sent2title_ids'][j])
             sp_dict.update({cur_id: cur_sp_pred})
-
+#   应该只有answer有参考价值
     prediction = {'answer': answer_dict, 'sp': sp_dict}
     with open(prediction_file, 'w') as f:
         json.dump(prediction, f)
