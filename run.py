@@ -82,6 +82,10 @@ def train(config):
     model = nn.DataParallel(ori_model)
 
     lr = config.init_lr
+# when function is defined (element for element in iterable if function(element))
+# when function is None (element for element in iterable if element)
+# lamda 为一个function argument 为p  返回值为p.requires_grad
+# filter(lambda p: p.requires_grad, model.parameters) 为： 筛选出model.parameters 中所有requires_grad的元素
     optimizer = optim.SGD(filter(lambda p: p.requires_grad, model.parameters()), lr=config.init_lr)
     cur_patience = 0
     total_loss = 0
@@ -90,9 +94,11 @@ def train(config):
     stop_train = False
     start_time = time.time()
     eval_start_time = time.time()
+#     声明training: for drop_out 层
     model.train()
 
     for epoch in range(10000):
+#         每一个data 是一个batch
         for data in build_train_iterator():
             context_idxs = Variable(data['context_idxs'])
             ques_idxs = Variable(data['ques_idxs'])
@@ -118,16 +124,18 @@ def train(config):
 
             total_loss += loss.data[0]
             global_step += 1
-
+#           记录损失
             if global_step % config.period == 0:
                 cur_loss = total_loss / config.period
                 elapsed = time.time() - start_time
                 logging('| epoch {:3d} | step {:6d} | lr {:05.5f} | ms/batch {:5.2f} | train loss {:8.3f}'.format(epoch, global_step, lr, elapsed*1000/config.period, cur_loss))
                 total_loss = 0
                 start_time = time.time()
-
+# 存入checkpoint
             if global_step % config.checkpoint == 0:
+#         设置model 为eval 状态
                 model.eval()
+#         返回值是一个dict: f1 
                 metrics = evaluate_batch(build_dev_iterator(), model, 0, dev_eval_file, config)
                 model.train()
 
@@ -181,8 +189,8 @@ def evaluate_batch(data_source, model, max_batches, eval_file, config):
         loss = (nll_sum(predict_type, q_type) + nll_sum(logit1, y1) + nll_sum(logit2, y2)) / context_idxs.size(0) + config.sp_lambda * nll_average(predict_support.view(-1, 2), is_support.view(-1))
         answer_dict_ = convert_tokens(eval_file, data['ids'], yp1.data.cpu().numpy().tolist(), yp2.data.cpu().numpy().tolist(), np.argmax(predict_type.data.cpu().numpy(), 1))
         answer_dict.update(answer_dict_)
-
-        total_loss += loss.data[0]
+#       相当于map[x]=y
+        total_loss += loss.data.item()
         step_cnt += 1
     loss = total_loss / step_cnt
     metrics = evaluate(eval_file, answer_dict)
