@@ -6,6 +6,9 @@
 best_dev_F1 64.60608215105948
 ```
 ```
+{'f1': 0.6460608215105955, 'recall': 0.6661522409243548, 'prec': 0.6743275068393223, 'sp_f1': 0.14916748942406766, 'joint_f1': 0.09847809921520946, 'joint_prec': 0.06095010805013573, 'em': 0.4973666441593518, 'sp_prec': 0.09017627499446443, 'sp_em': 0.0, 'sp_recall': 0.45199430886466524, 'joint_recall': 0.3034137242643319, 'joint_em': 0.0}
+```
+```
 CUDA_VISIBLE_DEVICES=0 python main.py --mode test --data_split dev --para_limit 2250 --batch_size 24 --init_lr 0.1 --keep_prob 1.0 --sp_lambda 1.0 --save HOTPOT-20190411-013304 --prediction_file dev_distractor_pred.json
 ```
 ```
