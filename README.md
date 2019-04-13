@@ -1,7 +1,9 @@
 # model by filter ing supporting factors in the middle stage before self-attention:
+reminder: i have already change the overall util function to include the extra is_support_word data structure. 
 model for testing using only supporting facts:
-    [model](/model_test2.py)
-    [run](/run_test2.py)
+    [model_test2](/model_test2.py)
+    [run_test2](/run_test2.py)
+    [util](/util.py)
 # model using only supporting factors
 ```
 -----------------------------------------------------------------------------------------
