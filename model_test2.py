@@ -68,6 +68,7 @@ class Model(nn.Module):
 #       filter ==0 的项
         context_mask = (context_idxs > 0).float()
         ques_mask = (ques_idxs > 0).float()
+        sp_mask 
 #       ques_idx: b*n*1
         context_ch = self.char_emb(context_char_idxs.contiguous().view(-1, char_size)).view(bsz * para_size, char_size, -1)
         ques_ch = self.char_emb(ques_char_idxs.contiguous().view(-1, char_size)).view(bsz * ques_size, char_size, -1)
