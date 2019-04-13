@@ -110,7 +110,7 @@ class Model(nn.Module):
         sp_output = torch.matmul(all_mapping, sp_output)
 #         正常支路
         output_t = self.rnn_2(output, context_lens)
-        output_t = self.self_att(output_t, output_t, context_mask)
+        output_t = self.self_att(output_t, output_t, sp_mask)
         output_t = self.linear_2(output_t)
         output= output+ output_t
 #         两条支路连接
