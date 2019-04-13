@@ -109,11 +109,12 @@ def train(config):
             y2 = Variable(data['y2'])
             q_type = Variable(data['q_type'])
             is_support = Variable(data['is_support'])
+            is_support_word=  Variable(data['is_support_word'])
             start_mapping = Variable(data['start_mapping'])
             end_mapping = Variable(data['end_mapping'])
             all_mapping = Variable(data['all_mapping'])
 
-            logit1, logit2, predict_type, predict_support = model(context_idxs, ques_idxs, context_char_idxs, ques_char_idxs, context_lens, start_mapping, end_mapping, all_mapping, return_yp=False,is_support)
+            logit1, logit2, predict_type, predict_support = model(context_idxs, ques_idxs, context_char_idxs, ques_char_idxs, context_lens, start_mapping, end_mapping, all_mapping, return_yp=False,is_support_word)
             loss_1 = (nll_sum(predict_type, q_type) + nll_sum(logit1, y1) + nll_sum(logit2, y2)) / context_idxs.size(0)
             loss_2 = nll_average(predict_support.view(-1, 2), is_support.view(-1))
             loss = loss_1 + config.sp_lambda * loss_2
@@ -181,11 +182,12 @@ def evaluate_batch(data_source, model, max_batches, eval_file, config):
         y2 = Variable(data['y2'], volatile=True)
         q_type = Variable(data['q_type'], volatile=True)
         is_support = Variable(data['is_support'], volatile=True)
+        is_support_word=  Variable(data['is_support_word'],volatile=True)
         start_mapping = Variable(data['start_mapping'], volatile=True)
         end_mapping = Variable(data['end_mapping'], volatile=True)
         all_mapping = Variable(data['all_mapping'], volatile=True)
 
-        logit1, logit2, predict_type, predict_support, yp1, yp2 = model(context_idxs, ques_idxs, context_char_idxs, ques_char_idxs, context_lens, start_mapping, end_mapping, all_mapping, return_yp=True,is_support)
+        logit1, logit2, predict_type, predict_support, yp1, yp2 = model(context_idxs, ques_idxs, context_char_idxs, ques_char_idxs, context_lens, start_mapping, end_mapping, all_mapping, return_yp=True,is_support_word)
         loss = (nll_sum(predict_type, q_type) + nll_sum(logit1, y1) + nll_sum(logit2, y2)) / context_idxs.size(0) + config.sp_lambda * nll_average(predict_support.view(-1, 2), is_support.view(-1))
         answer_dict_ = convert_tokens(eval_file, data['ids'], yp1.data.cpu().numpy().tolist(), yp2.data.cpu().numpy().tolist(), np.argmax(predict_type.data.cpu().numpy(), 1))
         answer_dict.update(answer_dict_)
@@ -212,7 +214,8 @@ def predict(data_source, model, eval_file, config, prediction_file):
         end_mapping = Variable(data['end_mapping'], volatile=True)
         all_mapping = Variable(data['all_mapping'], volatile=True)
         is_support = Variable(data['is_support'],votatile= True)
-        logit1, logit2, predict_type, predict_support, yp1, yp2 = model(context_idxs, ques_idxs, context_char_idxs, ques_char_idxs, context_lens, start_mapping, end_mapping, all_mapping, return_yp=True,is_support)
+        is_support_word=  Variable(data['is_support_word'])
+        logit1, logit2, predict_type, predict_support, yp1, yp2 = model(context_idxs, ques_idxs, context_char_idxs, ques_char_idxs, context_lens, start_mapping, end_mapping, all_mapping, return_yp=True,is_support_word)
         answer_dict_ = convert_tokens(eval_file, data['ids'], yp1.data.cpu().numpy().tolist(), yp2.data.cpu().numpy().tolist(), np.argmax(predict_type.data.cpu().numpy(), 1))
         answer_dict.update(answer_dict_)
 
