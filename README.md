@@ -1,3 +1,7 @@
+# model by filter ing supporting factors in the middle stage before self-attention:
+model for testing using only supporting facts:
+    [model](/model_test2.py)
+    [run](/run_test2.py)
 # model using only supporting factors
 ```
 -----------------------------------------------------------------------------------------
