@@ -56,7 +56,7 @@ class DataIterator(object):
         end_mapping = torch.Tensor(self.bsz, self.para_limit, self.sent_limit).cuda()
         all_mapping = torch.Tensor(self.bsz, self.para_limit, self.sent_limit).cuda()
         is_support = torch.LongTensor(self.bsz, self.sent_limit).cuda()
-
+        is_support_word= torch.LongTensor(self.bsz, self.para_limit).cuda()
         while True:
             if len(self.bkt_pool) == 0: break
             bkt_id = random.choice(self.bkt_pool) if self.shuffle else self.bkt_pool[0]
@@ -73,7 +73,7 @@ class DataIterator(object):
             for mapping in [start_mapping, end_mapping, all_mapping]:
                 mapping.zero_()
             is_support.fill_(IGNORE_INDEX)
-
+            is_support_word.fill_(0)
             for i in range(len(cur_batch)):
                 context_idxs[i].copy_(cur_batch[i]['context_idxs'])
                 ques_idxs[i].copy_(cur_batch[i]['ques_idxs'])
@@ -110,7 +110,7 @@ class DataIterator(object):
                         end_mapping[i, end-1, j] = 1
                         all_mapping[i, start:end, j] = 1
                         is_support[i, j] = int(is_sp_flag)
-
+                        is_support_word[i, start:end] = int(is_sp_flag)
                 max_sent_cnt = max(max_sent_cnt, len(cur_batch[i]['start_end_facts']))
 
             input_lengths = (context_idxs[:cur_bsz] > 0).long().sum(dim=1)
@@ -133,7 +133,9 @@ class DataIterator(object):
                 'is_support': is_support[:cur_bsz, :max_sent_cnt].contiguous(),
                 'start_mapping': start_mapping[:cur_bsz, :max_c_len, :max_sent_cnt],
                 'end_mapping': end_mapping[:cur_bsz, :max_c_len, :max_sent_cnt],
-                'all_mapping': all_mapping[:cur_bsz, :max_c_len, :max_sent_cnt]}
+                'all_mapping': all_mapping[:cur_bsz, :max_c_len, :max_sent_cnt],
+                   'is_support_word': is_support[:cur_bsz, :max_c_len].contiguous()
+                  }
 
 def get_buckets(record_file):
     # datapoints = pickle.load(open(record_file, 'rb'))
