@@ -134,7 +134,7 @@ class DataIterator(object):
                 'start_mapping': start_mapping[:cur_bsz, :max_c_len, :max_sent_cnt],
                 'end_mapping': end_mapping[:cur_bsz, :max_c_len, :max_sent_cnt],
                 'all_mapping': all_mapping[:cur_bsz, :max_c_len, :max_sent_cnt],
-                   'is_support_word': is_support[:cur_bsz, :max_c_len].contiguous()
+                   'is_support_word': is_support_word[:cur_bsz, :max_c_len].contiguous()
                   }
 
 def get_buckets(record_file):
