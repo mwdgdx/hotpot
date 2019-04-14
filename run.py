@@ -122,7 +122,7 @@ def train(config):
             loss.backward()
             optimizer.step()
 
-            total_loss += loss.data[0]
+            total_loss += loss.data.item()
             global_step += 1
 #           记录损失
             if global_step % config.period == 0:
