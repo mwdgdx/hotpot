@@ -1,3 +1,5 @@
+# debug
+RuntimeError: The size of tensor a (1773) must match the size of tensor b (100) at non-singleton dimension 2
 # model by filter ing supporting factors in the middle stage before self-attention:
 reminder: i have already change the overall util function to include the extra is_support_word data structure. 
 model for testing using only supporting facts:
