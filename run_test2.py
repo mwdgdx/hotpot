@@ -99,7 +99,7 @@ def train(config):
 
     for epoch in range(10000):
 #         每一个data 是一个batch
-        for data in build_train_iterator():
+        for idx, data in enumerate(build_train_iterator()):
             context_idxs = Variable(data['context_idxs'])
             ques_idxs = Variable(data['ques_idxs'])
             context_char_idxs = Variable(data['context_char_idxs'])
@@ -119,10 +119,12 @@ def train(config):
             loss_2 = nll_average(predict_support.view(-1, 2), is_support.view(-1))
             loss = loss_1 + config.sp_lambda * loss_2
 
-            optimizer.zero_grad()
+#             optimizer.zero_grad()
             loss.backward()
-            optimizer.step()
-
+#             optimizer.step()
+            if (i + 1) % 2 == 0:
+                optimizer.step()
+                optimizer.zero_grad()
             total_loss += loss.data.item()
             global_step += 1
 #           记录损失
