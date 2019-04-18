@@ -6,6 +6,11 @@ model for testing using only supporting facts:
     [run_test2](/run_test2.py)//
     [util](/util.py)//
     [sp_model_test2](/sp_model_test2.py)//
+training code:
+```
+CUDA_VISIBLE_DEVICES=0 python main.py --mode train --para_limit 2250 --batch_size 12 --init_lr 0.1 --keep_prob 1.0 --sp_lambda 1.0
+
+```
 # model using only supporting factors
 ```
 -----------------------------------------------------------------------------------------
