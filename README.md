@@ -11,6 +11,11 @@ training code:
 CUDA_VISIBLE_DEVICES=0 python main.py --mode train --para_limit 2250 --batch_size 12 --init_lr 0.1 --keep_prob 1.0 --sp_lambda 1.0
 CUDA_VISIBLE_DEVICES=1 python main.py --mode train --para_limit 2250 --batch_size 12 --init_lr 0.1 --keep_prob 1.0 --sp_lambda 1.0
 ```
+output for training:
+-----------------------------------------------------------------------------------------
+| eval     21 in epoch   2 | time: 869.02s | dev loss    3.625 | EM 48.4409 | F1 63.1520
+-----------------------------------------------------------------------------------------
+best_dev_F1 63.37813440065209
 # model using only supporting factors
 ```
 -----------------------------------------------------------------------------------------
