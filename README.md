@@ -9,7 +9,7 @@ model for testing using only supporting facts:
 training code:
 ```
 CUDA_VISIBLE_DEVICES=0 python main.py --mode train --para_limit 2250 --batch_size 12 --init_lr 0.1 --keep_prob 1.0 --sp_lambda 1.0
-
+CUDA_VISIBLE_DEVICES=0 python main.py --mode train --para_limit 2250 --batch_size 12 --init_lr 0.1 --keep_prob 1.0 --sp_lambda 1.0
 ```
 # model using only supporting factors
 ```
