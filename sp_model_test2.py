@@ -98,10 +98,11 @@ class SPModel(nn.Module):
         end_output = torch.matmul(end_mapping.permute(0, 2, 1).contiguous(), sp_output[:,:,:self.hidden])
         sp_output = torch.cat([start_output, end_output], dim=-1)
         sp_output_t = self.linear_sp(sp_output)
+        print(sp_output_t.shape())
         sp_output_aux = Variable(sp_output_t.data.new(sp_output_t.size(0), sp_output_t.size(1), 1).zero_())
         predict_support = torch.cat([sp_output_aux, sp_output_t], dim=-1).contiguous()
-
         sp_output = torch.matmul(all_mapping, sp_output)
+        sp_mask= (torch.sigmoid(predict_support[:, :, 1])> 0.3).float()
 #         正常支路
         output_t = self.rnn_2(output, context_lens)
         output_t = self.self_att(output_t, output_t, sp_mask)
