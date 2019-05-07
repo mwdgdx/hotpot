@@ -24,7 +24,6 @@ class SPModel(nn.Module):
         self.hidden = config.hidden
 
         self.rnn = EncoderRNN(config.char_hidden+self.word_dim, config.hidden, 1, True, True, 1-config.keep_prob, False)
-
         self.qc_att = BiAttention(config.hidden*2, 1-config.keep_prob)
         self.linear_1 = nn.Sequential(
                 nn.Linear(config.hidden*8, config.hidden),
@@ -68,6 +67,8 @@ class SPModel(nn.Module):
         ques_mask = (ques_idxs > 0).float()
 #         modify 1
         sp_mask = (is_support_word> 0).float()
+        
+        
         context_ch = self.char_emb(context_char_idxs.contiguous().view(-1, char_size)).view(bsz * para_size, char_size, -1)
         ques_ch = self.char_emb(ques_char_idxs.contiguous().view(-1, char_size)).view(bsz * ques_size, char_size, -1)
 
@@ -82,27 +83,39 @@ class SPModel(nn.Module):
 
         context_output = self.rnn(context_output, context_lens)
         ques_output = self.rnn(ques_output)
-
+#         print('biatt:')
         output = self.qc_att(context_output, ques_output, ques_mask)
         output = self.linear_1(output)
 #       sp 支路
         output_t = self.rnn_2(output, context_lens)
+# #         print('selfatt:')
         output_t = self.self_att(output_t, output_t, context_mask)
         output_t = self.linear_2(output_t)
 
         sp_output = output + output_t
 
         sp_output = self.rnn_sp(sp_output, context_lens)
-#       这里将词Mapping转为了句mapping
+
         start_output = torch.matmul(start_mapping.permute(0, 2, 1).contiguous(), sp_output[:,:,self.hidden:])
         end_output = torch.matmul(end_mapping.permute(0, 2, 1).contiguous(), sp_output[:,:,:self.hidden])
         sp_output = torch.cat([start_output, end_output], dim=-1)
         sp_output_t = self.linear_sp(sp_output)
-        print(sp_output_t.shape())
+        
+ 
+
+        print('107 shape :',sp_output_t.size())
         sp_output_aux = Variable(sp_output_t.data.new(sp_output_t.size(0), sp_output_t.size(1), 1).zero_())
         predict_support = torch.cat([sp_output_aux, sp_output_t], dim=-1).contiguous()
+        print('correct shape ', sp_mask.size())
+#         0.3: threshold  hyperparameter to tune
+        sent_mask= (torch.sigmoid(predict_support[:, :, 1])> 0.3).float().unsqueeze(2)
+        print('sent_mask', sent_mask.size())
+        print('all_mapping', all_mapping.size())
+        print('predict_support', predict_support.size())
+        sp_mask = torch.matmul(all_mapping, sent_mask).squeeze(2)
+#         b*c*s  * b*s*1
+        print('actual', sp_mask.size())
         sp_output = torch.matmul(all_mapping, sp_output)
-        sp_mask= (torch.sigmoid(predict_support[:, :, 1])> 0.3).float()
 #         正常支路
         output_t = self.rnn_2(output, context_lens)
         output_t = self.self_att(output_t, output_t, sp_mask)
@@ -220,6 +233,9 @@ class BiAttention(nn.Module):
         memory_dot = self.memory_linear(memory).view(bsz, 1, memory_len)
         cross_dot = torch.bmm(input * self.dot_scale, memory.permute(0, 2, 1).contiguous())
         att = input_dot + memory_dot + cross_dot
+#         print('att size: ',list(att.size()))
+#         print('mask size: ',list(mask.size()))
+
         att = att - 1e30 * (1 - mask[:,None])
 
         weight_one = F.softmax(att, dim=-1)
