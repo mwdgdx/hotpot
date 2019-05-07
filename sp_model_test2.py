@@ -93,7 +93,7 @@ class SPModel(nn.Module):
         sp_output = output + output_t
 
         sp_output = self.rnn_sp(sp_output, context_lens)
-
+#       这里将词Mapping转为了句mapping
         start_output = torch.matmul(start_mapping.permute(0, 2, 1).contiguous(), sp_output[:,:,self.hidden:])
         end_output = torch.matmul(end_mapping.permute(0, 2, 1).contiguous(), sp_output[:,:,:self.hidden])
         sp_output = torch.cat([start_output, end_output], dim=-1)
