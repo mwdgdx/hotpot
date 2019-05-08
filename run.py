@@ -157,7 +157,7 @@ def train(config):
                         lr /= 2.0
                         for param_group in optimizer.param_groups:
                             param_group['lr'] = lr
-                        if lr < config.init_lr * 1e-2:
+                        if lr < config.init_lr * 1e-3:
                             stop_train = True
                             break
                         cur_patience = 0
