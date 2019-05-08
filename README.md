@@ -1,10 +1,12 @@
-# 正式的结果
+# use prediction traceback output
+1. threshold = 0.3
 ```
 -----------------------------------------------------------------------------------------
 | eval     25 in epoch   3 | time: 851.63s | dev loss    4.805 | EM 41.7977 | F1 55.9168
 -----------------------------------------------------------------------------------------
 best_dev_F1 55.92223807984311
 ```
+2. threshold = 0.2
 # model by filter ing supporting factors in the middle stage before self-attention:
 reminder: i have already change the overall util function to include the extra is_support_word data structure. 
 model for testing using only supporting facts:
