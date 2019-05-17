@@ -5,6 +5,7 @@
 | eval     23 in epoch   3 | time: 1401.24s | dev loss    4.878 | EM 40.9572 | F1 54.7996
 -----------------------------------------------------------------------------------------
 best_dev_F1 55.05900759590962
+CUDA_VISIBLE_DEVICES=0 python main.py --mode test --data_split dev --para_limit 2250 --batch_size 24 --init_lr 0.1 --keep_prob 1.0 --sp_lambda 1.0 --save HOTPOT-20190512-005929 --prediction_file dev_distractor_pred.json
 ```
 1. threshold = 0.3
 ```
