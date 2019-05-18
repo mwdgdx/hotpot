@@ -1,3 +1,7 @@
+test for support_factor
+```
+CUDA_VISIBLE_DEVICES=0 python main.py --mode test --data_split dev --para_limit 2250 --batch_size12 --init_lr 0.1 --keep_prob 1.0 --sp_lambda 1.0 --save HOTPOT-20190512-005929 --prediction_file dev_distractor_pred.json
+```
 # use prediction traceback output
 1. threshold = 0.4
 ```
