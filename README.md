@@ -40,6 +40,16 @@ best_dev_F1 56.53792785703203
 -----------------------------------------------------------------------------------------
 best_dev_F1 54.74794182228903
 ```
+5. threshold = 0.001
+```
+-----------------------------------------------------------------------------------------
+| eval     26 in epoch   3 | time: 860.75s | dev loss    4.898 | EM 41.1334 | F1 55.2774
+-----------------------------------------------------------------------------------------
+best_dev_F1 55.334311573506525
+```
+6. threshold = 0.005
+
+
 # model by filter ing supporting factors in the middle stage before self-attention:
 reminder: i have already change the overall util function to include the extra is_support_word data structure. 
 model for testing using only supporting facts:
