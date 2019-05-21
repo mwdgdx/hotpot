@@ -48,6 +48,9 @@ best_dev_F1 54.74794182228903
 best_dev_F1 55.334311573506525
 ```
 6. threshold = 0.005
+```
+ eval     20 in epoch   2 | time: 1335.69s | dev loss    4.875 | EM 41.0385 | F1 54.5506
+```
 
 
 # model by filter ing supporting factors in the middle stage before self-attention:
