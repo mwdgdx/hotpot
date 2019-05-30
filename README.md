@@ -7,6 +7,10 @@ CUDA_VISIBLE_DEVICES=0 python main.py --mode test --data_split dev --para_limit 
 ```
 best_dev_F1 61.769143905869505
 ```
+20% unsupporting factor 
+```
+best_dev_F1 55.402730811662096
+```
 # use prediction traceback output
 1. threshold = 0.4
 ```
