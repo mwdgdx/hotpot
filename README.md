@@ -5,7 +5,7 @@ CUDA_VISIBLE_DEVICES=0 python main.py --mode test --data_split dev --para_limit 
 # mixed tricking input
 50% unsupporting factor
 ```
-| eval     23 in epoch   3 | time: 1558.00s | dev loss    4.196 | EM 46.3395 | F1 61.1666
+best_dev_F1 61.769143905869505
 ```
 # use prediction traceback output
 1. threshold = 0.4
