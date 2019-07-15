@@ -1,3 +1,4 @@
+graph processing code : graph_process.py missing rate 36%
 word selection : missed 19 from 100
 # ???
 test for support_factor
