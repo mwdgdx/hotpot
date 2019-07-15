@@ -1,3 +1,6 @@
+# hotpot 中 support / sent 比例：
+4603011 215684
+# 通过构图来提取support factor
 graph processing code : process_graph.py missing rate 36%
 word selection : missed 19 from 100
 # ???
