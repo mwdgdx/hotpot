@@ -1,3 +1,8 @@
+Preprocess the training and dev sets in the distractor setting:
+```
+python main.py --mode prepro --data_file mixed_train.json --para_limit 2250 --data_split train
+python main.py --mode prepro --data_file mixed_dev.json --para_limit 2250 --data_split dev
+```
 # hotpot 中 support / sent 比例：
 4603011 215684
 # 通过构图来提取support factor
